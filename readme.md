@@ -221,27 +221,31 @@ emerge-webrsync
 emerge --sync
 ```
 
-## 19. choosing the right profile
+## 19. install vim
+```bash
+emerge vim
+```
+
+## 20. choosing the right profile
 A profile is a building block for any Gentoo system. Not only does it specify default values for USE, CFLAGS, and other important variables, it also locks the system to a certain range of package versions. These settings are all maintained by Gentoo's Portage developers.
 ```bash
 eselect profile list
 eselect profile set <nr>
 ```
 
-## 20. updating the @world set
+## 21. updating the @world set
 It is wise to update the system's @world set so that a base can be established for the new profile.
 ```bash
 emerge --ask --update --deep --newuse @world
 ```
 
-## 21. configuring the USE variable
+## 22. configuring the USE variable
 USE is one of the most powerful variables Gentoo provides to its users. Several programs can be compiled with or without optional support for certain items.
 
 The easiest way to check the currently active USE settings is to run
 ```emerge --info | grep ^USE```
 
-A full description on the available USE flags can be found on the system in
-less ```/usr/portage/profiles/use.desc```
+A full description on the available USE flags can be found on the system in ```/usr/portage/profiles/use.desc```.
 
 Users who want to ignore any default USE settings and manage it completely themselves should start the USE definition in ```/etc/portage/make.conf``` with -*:
 
@@ -249,32 +253,32 @@ Users who want to ignore any default USE settings and manage it completely thems
 USE="-* X acl alsa"
 ```
 
-## 22. timezone
+## 23. timezone
 ```bash
 echo "Europe/Warsaw" > /etc/timezone
 emerge --config sys-libs/timezone-data
 ```
 
-## 23. configure locales 
-```nano /etc/locale.gen```
+## 24. configure locales 
+```vim /etc/locale.gen```
 ```bash
 locale-gen
 eselect locale list
 eselect locale set <nr>
 ```
 
-## 24. reload the environment
+## 25. reload the environment
 ```bash
 env-update && source /etc/profile && export PS1="(chroot) $PS1"
 ```
 
 
-## 25. installing the Linux sources
+## 26. installing the Linux sources
 ```bash
 emerge --ask sys-kernel/gentoo-sources
 ```
 
-# manual kernel configuration
+## 27. manual kernel configuration
 ```bash
 cd /usr/src/linux
 make menuconfig
@@ -364,17 +368,17 @@ Device Drivers -->
          < > PC Speaker support
 ```
 
-## 26. compiling and installing
+## 28. compiling and installing
 ```bash
 make && make modules_install
 ```
 
-## 27. copy the kernel image to ```/boot```
+## 29. copy the kernel image to ```/boot```
 ```bash
 make install
 ```
 
-## 28. building an initramfs
+## 30. building an initramfs
 ```bash
 emerge --ask sys-kernel/genkernel
 genkernel --install initramfs
@@ -382,15 +386,15 @@ genkernel --lvm --mdadm --install initramfs
 ls /boot/initramfs*
 ```
 
-## 29. installing firmware
+## 31. installing firmware
 Some drivers require additional firmware to be installed on the system before they work. This is often the case for network interfaces, especially wireless network interfaces.
 ```bash
 emerge --ask sys-kernel/linux-firmware
 ```
 
-## 30. edit ```/etc/fstab```
+## 32. edit ```/etc/fstab```
 ```bash
-nano -w /etc/fstab
+vim /etc/fstab
 ```
 
 ```bash
@@ -400,50 +404,45 @@ nano -w /etc/fstab
 ```
 set /dev/sda3 only if you've created a swap partition
 
-## 31. set host
+## 33. set host
 ```bash
-nano -w /etc/conf.d/hostname
+vim /etc/conf.d/hostname
 ```
 
-## 32. configuring the network (TODO)
+## 34. configuring the network (TODO)
 ```bash
 emerge --ask net-misc/dhcpcd
 emerge --ask net-wireless/iw net-wireless/wpa_supplicant
 emerge networkmanager
 rc-update add NetworkManager default
 ```
-## 33. add a user and set passwords
+## 35. add a user and set passwords
 ```bash
 useradd -G users,wheel,audio,portage,cron -s /bin/bash <username>
 passwd
 passwd <username>
 ```
 
-## 34. install vim
-```bash
-emerge vim
-```
-
-## 35. edit sudoers file
+## 36. edit sudoers file
 ```bash
 emerge sudo
 visudo
 ```
 
-## 36. install grub
+## 37. install grub
 ```bash
-emerge --ask --verbose sys-boot/grub:2
+emerge -av sys-boot/grub:2
 grub-install /dev/sda
 vim /boot/grub/grub.cfg
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-## 37. install network tools
+## 38. install network tools
 ```bash
 emerge --ask sys-apps/iproute2 net-misc/dhcpcd net-wireless/wireless-tools net-wireless/iw net-wireless/wpa_supplicant
 ```
 
-## 38. reboot the system
+## 39. reboot the system
 ```bash
 exit
 cd
@@ -452,7 +451,7 @@ umount -l -R /mnt/gentoo{/boot,/proc,}
 reboot
 ```
 
-## 39. cleaning
+## 40. cleaning
 ```bash
 rm /stage3*
 ```
