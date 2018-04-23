@@ -43,7 +43,9 @@ links https://wiki.gentoo.org/wiki/Handbook:AMD64
 ```
 
 ## 1. select a kernel
+```bash
 boot: gentoo
+```
 
 ## 2. testing the network
 ```bash
@@ -125,7 +127,7 @@ CXXFLAGS="${CFLAGS}"
 MAKEOPTS="-j4"
 VIDEO_CARDS="intel vesa"
 
-INPUT_DEVICES="evdev keyboard mouse synaptics"
+INPUT_DEVICES="evdev keyboard mouse synaptics libinput"
 NOTUSE="-gtk -gnome -qt4"
 USE="${NOTUSE} X systemd acpi alsa ffmpeg flac ftp gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ogg opengl png python ssl svg systemd wifi xft zsh-completion
 
@@ -144,6 +146,9 @@ DISTDIR=/var/gentoo/distfiles
 AUTOCLEAN="yes"
 
 LINGUAS="pl en_US"
+
+# BIOS/MBR is pc, 64-bit UEFI is efi-64, 32-bit UEFI is efi-32
+GRUB_PLATFORMS="pc"
 ```
 
 ## 10. selecting mirrors
@@ -284,6 +289,10 @@ Device Drivers --->
    SCSI device support  --->
       <*> SCSI disk support
 
+Device Drivers --->
+  Input device support --->
+  <*>  Event interface
+
 File systems --->
   <*> Second extended fs support
   <*> The Extended 3 (ext3) filesystem
@@ -347,6 +356,12 @@ Firmware Drivers  --->
     -*-   Wireless  ---> 
         <*>   cfg80211 - wireless configuration API
         [*]   cfg80211 wireless extensions compatibility
+
+# disable beep sound
+Device Drivers -->
+   Input device support -->
+      Miscellaneous devices -->
+         < > PC Speaker support
 ```
 
 ## 26. compiling and installing
@@ -374,7 +389,7 @@ emerge --ask sys-kernel/linux-firmware
 ```
 
 ## 30. edit ```/etc/fstab```
-```bash]
+```bash
 nano -w /etc/fstab
 ```
 
@@ -404,20 +419,31 @@ passwd
 passwd <username>
 ```
 
-## 34. edit sudoers file
+## 34. install vim
+```bash
+emerge vim
+```
+
+## 35. edit sudoers file
 ```bash
 emerge sudo
 visudo
 ```
 
-## 35. install grub
+## 36. install grub
 ```bash
 emerge --ask --verbose sys-boot/grub:2
 grub-install /dev/sda
+vim /boot/grub/grub.cfg
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-## 36. reboot the system
+## 37. install network tools
+```bash
+emerge --ask sys-apps/iproute2 net-misc/dhcpcd net-wireless/wireless-tools net-wireless/iw net-wireless/wpa_supplicant
+```
+
+## 38. reboot the system
 ```bash
 exit
 cd
@@ -426,7 +452,7 @@ umount -l -R /mnt/gentoo{/boot,/proc,}
 reboot
 ```
 
-## 37. cleaning
+## 39. cleaning
 ```bash
 rm /stage3*
 ```
