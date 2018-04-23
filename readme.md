@@ -46,7 +46,21 @@ links https://wiki.gentoo.org/wiki/Handbook:AMD64
 boot: gentoo
 
 ## 2. testing the network
+```bash
 ping google.com
+```
+
+If there's no connection:
+
+### 2.1 list interfaces
+```bash
+ip link
+```
+
+### 2.2 set the interface up
+```bash
+ip link set <interface> up
+```
 
 ## 3. creating the partitions 
 ```bash
@@ -133,16 +147,31 @@ LINGUAS="pl en_US"
 ```
 
 ## 10. selecting mirrors
+In order to download source code quickly it is recommended to select a fast/close mirror.
 ```bash
 mirrorselect -i -r -o >> /mnt/gentoo/etc/portage/make.conf
 ```
 
+A second important step in selecting mirrors is to configure the Gentoo ebuild
+repository via the ```/etc/portage/repos.conf/gentoo.conf```. This file
+contains the sync information needed to update the package repository.
+```bash
+mkdir -p /mnt/gentoo/etc/portage/repos.conf
+```
+
+Next, copy the Gentoo repository configuration file provided by Portage
+```bash
+cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+```
+
 ## 11. copy DNS info
+One thing still remains to be done before entering the new environment and that is copying over the DNS information in ```/etc/resolv.conf```. This needs to be done to ensure that networking still works even after entering the new environment. ```/etc/resolv.conf``` contains the name servers for the network.
 ```bash
 cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
 ```
 
 ## 12. mounting the necessary filesystems
+In a few moments, the Linux root will be changed towards the new location. To make sure that the new environment works properly, certain filesystems need to be made available there as well.
 ```bash
 mount -t proc /proc /mnt/gentoo/proc
 mount --rbind /sys /mnt/gentoo/sys
@@ -153,6 +182,8 @@ mount --make-rslave /mnt/gentoo/dev
 
 ## 13. entering the new environment by chrooting into it
 This means that the session will change its root (most top-level location that can be accessed) from the current installation environment (installation CD or other installation medium) to the installation system (namely the initialized partitions). Hence the name, change root or chroot.
+
+The root location is changed from ```/``` (on the installation medium) to ```/mnt/gentoo/``` (on the partitions) using chroot
 ```bash
 chroot /mnt/gentoo /bin/bash
 ```
@@ -186,6 +217,7 @@ emerge --sync
 ```
 
 ## 19. choosing the right profile
+A profile is a building block for any Gentoo system. Not only does it specify default values for USE, CFLAGS, and other important variables, it also locks the system to a certain range of package versions. These settings are all maintained by Gentoo's Portage developers.
 ```bash
 eselect profile list
 eselect profile set <nr>
@@ -386,11 +418,13 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 ## 36. reboot the system
+```bash
 exit
 cd
 umount -l /mnt/gentoo/dev{/shm,/pts,}
 umount -l -R /mnt/gentoo{/boot,/proc,}
 reboot
+```
 
 ## 37. cleaning
 ```bash
