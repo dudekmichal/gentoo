@@ -55,11 +55,21 @@ config_other()
   setxkbmap -option caps:escape &
 }
 
+clone_dotfiles()
+{
+  cd $HOME
+  git init
+  git remote add origin git@github.com:dudekmichal/dotfiles.git
+  git checkout -b master
+  git pull origin master
+}
+
 main()
 {
   create_directories
   install_packages
   config_other
+  clone_dotfiles
 }
 
 main
