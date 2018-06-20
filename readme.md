@@ -129,7 +129,7 @@ VIDEO_CARDS="intel vesa"
 
 INPUT_DEVICES="evdev keyboard mouse synaptics libinput"
 NOTUSE="-gtk -gnome -qt4"
-USE="${NOTUSE} X systemd acpi alsa ffmpeg flac ftp gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ogg opengl png python ssl svg systemd wifi xft zsh-completion
+USE="${NOTUSE} X systemd acpi alsa ffmpeg flac ftp gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ogg opengl png python python3 ssl svg systemd wifi xft zsh-completion"
 
 # which software licenses are allowed
 ACCEPT_LICENSE="*"
