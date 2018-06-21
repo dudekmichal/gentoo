@@ -32,12 +32,12 @@ install_packages()
   x11-misc/redshift app-editors/vim net-misc/youtube-dl net-p2p/rtorrent \
   app-text/zathura app-misc/mc x11-terms/xterm www-client/links \
   sys-libs/ncurses media-sound/mpd media-sound/ncmpcpp media-sound/mpc \
-  media-gfx/feh media-plugins/alsa-plugins x11-apps/xbacklight \
-  dev-util/cmake net-misc/curl dev-util/ ctags dev-lang/lua media-sound/gmtp \
-  x11-apps/setxkbmap app-misc/neofetch app-arch/p7zip app-arch/unrar \
+  media-gfx/feh media-plugins/alsa-plugins media-sound/alsamixer-app media-libs/alsa-lib x11-apps/xbacklight \
+  dev-util/cmake net-misc/curl net-misc/dhcpcd sys-apps/dbus dev-lang/lua media-sound/gmtp \
+  app-misc/neofetch app-arch/p7zip app-arch/unrar app-portage/genlop \
   app-arch/unzip dev-lang/python sys-devel/gcc dev-vcs/git virtual/ssh \
   media-fonts/terminus-font app-shells/zsh sys-power/acpi sys-process/htop \
-  games-roguelike/nethack www-client/chromium
+  sys-fs/ntfs3g games-roguelike/nethack www-client/firefox
 
   # When the installation is finished, some environment variables will need to re-initialized before continuing. Source the profile with this command.
   sudo env-update
@@ -46,6 +46,10 @@ install_packages()
 
 config_other()
 {
+  rc-update add dhcpcd default
+  rc-update add wpa_supplicant default
+  rc-update add wicd default
+
   chsh -s /bin/zsh $USER
   xrdb -merge $HOME/.Xresources
 
@@ -57,11 +61,13 @@ config_other()
 
 clone_dotfiles()
 {
-  cd $HOME
-  git init
-  git remote add origin git@github.com:dudekmichal/dotfiles.git
-  git checkout -b master
-  git pull origin master
+  # TODO
+  # cd $HOME
+  # git init
+  #git remote add origin git@github.com:qeni/dotfiles.git
+  # git remote add origin https://github.com:qeni/dotfiles.git
+  # git checkout -b master
+  # git pull origin master
 }
 
 main()

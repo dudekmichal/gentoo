@@ -129,7 +129,7 @@ VIDEO_CARDS="intel vesa"
 
 INPUT_DEVICES="evdev keyboard mouse synaptics libinput"
 NOTUSE="-gtk -gnome -qt4"
-USE="${NOTUSE} X systemd acpi alsa ffmpeg flac ftp gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ogg opengl png python python3 ssl svg systemd wifi xft zsh-completion"
+USE="${NOTUSE} X systemd acpi alsa ffmpeg flac ftp fuse gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ncurses ogg opengl png python python3 ssl svg systemd wifi xft zsh-completion"
 
 # which software licenses are allowed
 ACCEPT_LICENSE="*"
@@ -411,10 +411,8 @@ vim /etc/conf.d/hostname
 
 ## 34. configuring the network (TODO)
 ```bash
-emerge --ask net-misc/dhcpcd
-emerge --ask net-wireless/iw net-wireless/wpa_supplicant
-emerge networkmanager
-rc-update add NetworkManager default
+emerge --ask net-misc/dhcpcd net-wireless/iw net-wireless/wpa_supplicant net-misc/wicd sys-firmware/b43-firmware
+rc-update add wicd default
 ```
 ## 35. add a user and set passwords
 ```bash
@@ -433,8 +431,8 @@ visudo
 ```bash
 emerge -av sys-boot/grub:2
 grub-install /dev/sda
-vim /boot/grub/grub.cfg
 grub-mkconfig -o /boot/grub/grub.cfg
+vim /boot/grub/grub.cfg
 ```
 
 ## 38. install network tools
