@@ -1,3 +1,5 @@
+![N|Solid](https://raw.github.com/qeni/gentoo/master/img/screenshot.png | width=400)
+
 # emerge cheatsheet
 
 ```bash
