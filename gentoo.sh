@@ -46,9 +46,6 @@ install_packages()
 
 config_other()
 {
-  rc-update add dhcpcd default
-  rc-update add wpa_supplicant default
-  rc-update add wicd default
   rc-update add sshd default
 
   chsh -s /bin/zsh $USER
