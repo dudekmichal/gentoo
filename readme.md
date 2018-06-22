@@ -1,4 +1,4 @@
-![N|Solid](https://raw.github.com/qeni/gentoo/master/img/screenshot.png)
+![N|Solid](https://raw.github.com/qeni/gentoo/testing/img/screenshot.png)
 
 # emerge cheatsheet
 
