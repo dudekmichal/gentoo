@@ -1,6 +1,9 @@
 # notes
 These installation notes and kernel config are configured for me and my
 computer (Lenovo G580). It can work for you but it does not have to.
+Feel free to follow my instructions, but keep in mind that you will probably have to
+add some drivers while kernel configuration and use different USE flags in
+```/etc/portage/make.conf```.
 
 # how it looks like
 ![N|Solid](https://raw.github.com/qeni/gentoo/master/img/screenshot.png)
@@ -54,7 +57,7 @@ links https://wiki.gentoo.org/wiki/Handbook:AMD64
 boot: gentoo
 ```
 
-## 2. testing the network
+## 2. test the network
 ```bash
 ping google.com
 ```
@@ -71,7 +74,7 @@ ip link
 ip link set <interface> up
 ```
 
-## 3. creating the partitions 
+## 3. create the partitions 
 ```bash
 # -t dos option forces to read the partition table using the MBR format.
 fdisk -t dos /dev/sda
@@ -91,38 +94,38 @@ fdisk -t dos /dev/sda
     w - write changes
 ```
 
-## 4. creating file systems
+## 4. create file systems
 ```bash
 mkfs.ext2 /dev/sda1
 mkfs.ext4 /dev/sda2
 ```
 
-## 5. activating the swap partition if exists
+## 5. activate the swap partition if exists
 ```bash
 mkswap /dev/sda3
 swapon /dev/sda3
 ```
 
-## 6. mounting the root partition
+## 6. mount the root partition
 ```bash
 mount /dev/sda2 /mnt/gentoo
 cd /mnt/gentoo
 ```
 
-## 7. setting the date and time
+## 7. set date and time
 ```bash
 date 
 date MMDDhhmmYYYY
 ```
 
-## 8. downloading the stage tarball
+## 8. download the stage tarball
 ```bash
 links www.gentoo.org/main/en/mirrors.xml
 select server -> releases/amd64/autobuilds/stage3*.tar.bz2
 tar xf stage3*
 ```
 
-## 9. configuring compile options
+## 9. configure compile options
 ```bash
 vi /mnt/gentoo/etc/portage/make.conf
 ```
@@ -135,7 +138,7 @@ MAKEOPTS="-j4"
 VIDEO_CARDS="intel vesa"
 
 INPUT_DEVICES="evdev keyboard mouse synaptics libinput"
-NOTUSE="-gtk -gnome -qt4"
+NOTUSE="-qt4"
 USE="${NOTUSE} X acpi alsa ffmpeg flac ftp fuse gif git ipv6 jpeg latex libnotify mp3 mp4 mpeg mtp mysql ncurses ogg opengl png python python3 ssl svg wifi xft zsh-completion"
 
 # which software licenses are allowed
@@ -158,7 +161,7 @@ LINGUAS="pl en_US"
 GRUB_PLATFORMS="pc"
 ```
 
-## 10. selecting mirrors
+## 10. select mirrors
 In order to download source code quickly it is recommended to select a fast/close mirror.
 ```bash
 mirrorselect -i -r -o >> /mnt/gentoo/etc/portage/make.conf
@@ -182,7 +185,7 @@ One thing still remains to be done before entering the new environment and that 
 cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
 ```
 
-## 12. mounting the necessary filesystems
+## 12. mount the necessary filesystems
 In a few moments, the Linux root will be changed towards the new location. To make sure that the new environment works properly, certain filesystems need to be made available there as well.
 ```bash
 mount -t proc /proc /mnt/gentoo/proc
@@ -192,7 +195,7 @@ mount --rbind /dev /mnt/gentoo/dev
 mount --make-rslave /mnt/gentoo/dev
 ```
 
-## 13. entering the new environment by chrooting into it
+## 13. enter the new environment by chrooting into it
 This means that the session will change its root (most top-level location that can be accessed) from the current installation environment (installation CD or other installation medium) to the installation system (namely the initialized partitions). Hence the name, change root or chroot.
 
 The root location is changed from ```/``` (on the installation medium) to ```/mnt/gentoo/``` (on the partitions) using chroot
@@ -200,7 +203,8 @@ The root location is changed from ```/``` (on the installation medium) to ```/mn
 chroot /mnt/gentoo /bin/bash
 ```
 
-## 14. some settings (those in /etc/profile) are reloaded in memory using the source command
+## 14. reload /etc/profile
+Some settings (those in /etc/profile) are reloaded in memory using the source command
 ```bash
 source /etc/profile
 ```
@@ -211,19 +215,19 @@ The primary prompt is changed to help us remember that this session is inside a 
 export PS1="(chroot) ${PS1}"
 ```
 
-## 16. mounting the boot partition
+## 16. mount the boot partition
 ```bash
 mkdir /boot
 mount /dev/sda2 /boot
 ```
 
-## 17. installing an ebuild repository snapshot from the web
+## 17. instal an ebuild repository snapshot from the web
 ```bash
 mkdir /usr/portage
 emerge-webrsync
 ```
 
-## 18. updating the Gentoo ebuild repository
+## 18. update the Gentoo ebuild repository
 ```bash
 emerge --sync
 ```
@@ -233,20 +237,20 @@ emerge --sync
 emerge app-editors/vim dev-vcs/git
 ```
 
-## 20. choosing the right profile
+## 20. choose the right profile
 A profile is a building block for any Gentoo system. Not only does it specify default values for USE, CFLAGS, and other important variables, it also locks the system to a certain range of package versions. These settings are all maintained by Gentoo's Portage developers.
 ```bash
 eselect profile list
 eselect profile set <nr>
 ```
 
-## 21. updating the @world set
+## 21. update the @world set
 It is wise to update the system's @world set so that a base can be established for the new profile.
 ```bash
 emerge --ask --update --deep --newuse @world
 ```
 
-## 22. configuring the USE variable
+## 22. configure the USE variable
 USE is one of the most powerful variables Gentoo provides to its users. Several programs can be compiled with or without optional support for certain items.
 
 The easiest way to check the currently active USE settings is to run
@@ -280,7 +284,7 @@ env-update && source /etc/profile && export PS1="(chroot) $PS1"
 ```
 
 
-## 26. installing the Linux sources
+## 26. install the Linux sources
 ```bash
 emerge --ask sys-kernel/gentoo-sources
 ```
@@ -288,14 +292,13 @@ emerge --ask sys-kernel/gentoo-sources
 ## 27. manual kernel configuration
 ```bash
 git clone https://github.com/qeni/gentoo.git
-cd gentoo
-cp kernel-config /usr/src/linux/
+cp gentoo/kernel-config /usr/src/linux/
 cd /usr/src/linux
 make menuconfig
 > load kernel-config file
 ```
 
-## 28. compiling and installing
+## 28. compile a kernel
 ```bash
 make && make modules_install
 ```
@@ -305,7 +308,7 @@ make && make modules_install
 make install
 ```
 
-## 30. installing firmware
+## 30. install firmware
 Some drivers require additional firmware to be installed on the system before they work. This is often the case for network interfaces, especially wireless network interfaces.
 ```bash
 emerge --ask sys-kernel/linux-firmware
@@ -328,7 +331,7 @@ set /dev/sda3 only if you've created a swap partition
 vim /etc/conf.d/hostname
 ```
 
-## 33. configuring the network (TODO)
+## 33. configure the network
 ```bash
 emerge --ask net-misc/dhcpcd net-wireless/iw net-wireless/wpa_supplicant net-misc/wicd sys-firmware/b43-firmware sys-apps/iproute2 net-wireless/wireless-tools
 rc-update add wicd default
@@ -423,4 +426,3 @@ sudo mv ~/.nethack_record /var/games/nethack/record
 ```bash
 startx
 ```
-
