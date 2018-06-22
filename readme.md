@@ -1,5 +1,9 @@
-![N|Solid](https://raw.github.com/qeni/gentoo/testing/img/screenshot.png
-| width=400)
+# notes
+These installation notes and kernel config are configured for me and my
+computer (Lenovo G580). It can work for you but it does not have to.
+
+# how it looks like
+![N|Solid](https://raw.github.com/qeni/gentoo/master/img/screenshot.png)
 
 # emerge cheatsheet
 
@@ -226,7 +230,7 @@ emerge --sync
 
 ## 19. install vim
 ```bash
-emerge vim
+emerge app-editors/vim dev-vcs/git
 ```
 
 ## 20. choosing the right profile
@@ -283,92 +287,12 @@ emerge --ask sys-kernel/gentoo-sources
 
 ## 27. manual kernel configuration
 ```bash
+git clone https://github.com/qeni/gentoo.git
+cd gentoo
+cp kernel-config /usr/src/linux/
 cd /usr/src/linux
 make menuconfig
-```
-
-```bash
-Device Drivers --->
-  Generic Driver Options --->
-    [*] Maintain a devtmpfs filesystem to mount at /dev
-
-Device Drivers --->
-   SCSI device support  --->
-      <*> SCSI disk support
-
-Device Drivers --->
-  Input device support --->
-  <*>  Event interface
-
-File systems --->
-  <*> Second extended fs support
-  <*> The Extended 3 (ext3) filesystem
-  <*> The Extended 4 (ext4) filesystem
-  <*> Reiserfs support
-  <*> JFS filesystem support
-  <*> XFS filesystem support
-  <*> Btrfs filesystem support
-  DOS/FAT/NT Filesystems  --->
-    <*> MSDOS fs support
-    <*> VFAT (Windows-95) fs support
- 
-Pseudo Filesystems --->
-    [*] /proc file system support
-    [*] Tmpfs virtual memory file system support (former shm fs)
-
-Processor type and features  --->
-  [*] Symmetric multi-processing support
-
-Device Drivers --->
-  HID support  --->
-    -*- HID bus support
-    <*>   Generic HID driver
-    [*]   Battery level reporting for HID devices
-      USB HID support  --->
-        <*> USB HID transport layer
-  [*] USB support  --->
-    <*>     xHCI HCD (USB 3.0) support
-    <*>     EHCI HCD (USB 2.0) support
-    <*>     OHCI HCD (USB 1.1) support
-
-Processor type and features  --->
-   [ ] Machine Check / overheating reporting
-   [ ]   Intel MCE Features
-   [ ]   AMD MCE Features
-   Processor family (AMD-Opteron/Athlon64)  --->
-      ( ) Opteron/Athlon64/Hammer/K8
-      ( ) Intel P4 / older Netburst based Xeon
-      ( ) Core 2/newer Xeon
-      ( ) Intel Atom
-      ( ) Generic-x86-64
-Executable file formats / Emulations  --->
-   [*] IA32 Emulation
-
--*- Enable the block layer --->
-   Partition Types --->
-      [*] Advanced partition selection
-      [*] EFI GUID Partition support
-
-# if UEFI used:
-Processor type and features  --->
-    [*] EFI runtime service support
-    [*]   EFI stub support
-    [*]     EFI mixed-mode support
-
-Firmware Drivers  --->
-    EFI (Extensible Firmware Interface) Support  --->
-        <*> EFI Variable Support via sysfs
-
-[*] Networking support  --->
-    -*-   Wireless  ---> 
-        <*>   cfg80211 - wireless configuration API
-        [*]   cfg80211 wireless extensions compatibility
-
-# disable beep sound
-Device Drivers -->
-   Input device support -->
-      Miscellaneous devices -->
-         < > PC Speaker support
+> load kernel-config file
 ```
 
 ## 28. compiling and installing
@@ -381,21 +305,13 @@ make && make modules_install
 make install
 ```
 
-## 30. building an initramfs
-```bash
-emerge --ask sys-kernel/genkernel
-genkernel --install initramfs
-genkernel --lvm --mdadm --install initramfs
-ls /boot/initramfs*
-```
-
-## 31. installing firmware
+## 30. installing firmware
 Some drivers require additional firmware to be installed on the system before they work. This is often the case for network interfaces, especially wireless network interfaces.
 ```bash
 emerge --ask sys-kernel/linux-firmware
 ```
 
-## 32. edit ```/etc/fstab```
+## 31. edit ```/etc/fstab```
 ```bash
 vim /etc/fstab
 ```
@@ -407,30 +323,31 @@ vim /etc/fstab
 ```
 set /dev/sda3 only if you've created a swap partition
 
-## 33. set host
+## 32. set host
 ```bash
 vim /etc/conf.d/hostname
 ```
 
-## 34. configuring the network (TODO)
+## 33. configuring the network (TODO)
 ```bash
-emerge --ask net-misc/dhcpcd net-wireless/iw net-wireless/wpa_supplicant net-misc/wicd sys-firmware/b43-firmware
+emerge --ask net-misc/dhcpcd net-wireless/iw net-wireless/wpa_supplicant net-misc/wicd sys-firmware/b43-firmware sys-apps/iproute2 net-wireless/wireless-tools
 rc-update add wicd default
+rc-update add dhcpcd default
 ```
-## 35. add a user and set passwords
+## 34. add a user and set passwords for him and root
 ```bash
 useradd -G users,wheel,audio,portage,cron -s /bin/bash <username>
 passwd
 passwd <username>
 ```
 
-## 36. edit sudoers file
+## 35. edit sudoers file
 ```bash
 emerge sudo
 visudo
 ```
 
-## 37. install grub
+## 36. install grub
 ```bash
 emerge -av sys-boot/grub:2
 grub-install /dev/sda
@@ -438,12 +355,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 vim /boot/grub/grub.cfg
 ```
 
-## 38. install network tools
-```bash
-emerge --ask sys-apps/iproute2 net-misc/dhcpcd net-wireless/wireless-tools net-wireless/iw net-wireless/wpa_supplicant
-```
-
-## 39. reboot the system
+## 37. reboot the system and login as a created user
 ```bash
 exit
 cd
@@ -452,7 +364,63 @@ umount -l -R /mnt/gentoo{/boot,/proc,}
 reboot
 ```
 
-## 40. cleaning
+## 38. create directories in $HOME
 ```bash
-rm /stage3*
+mkdir -p $HOME/{tmp, mnt, documents, music, movies, downloads, repo, pictures/screenshots}
 ```
+
+## 39. sync the Gentoo ebuild repository
+```bash
+sudo emerge-webrsync
+```
+
+## 40. install additional packages
+```bash
+sudo emerge --update --deep \
+x11-base/xorg-server x11-apps/xinit x11-wm/i3-gaps x11-misc/rofi \
+x11-misc/i3status x11-misc/i3lock media-gfx/scrot lxde-base/lxrandr \
+x11-misc/redshift app-editors/vim app-vim/jedi net-misc/youtube-dl net-p2p/rtorrent \
+app-text/zathura app-misc/mc x11-terms/xterm www-client/links \
+sys-libs/ncurses media-sound/mpd media-sound/ncmpcpp media-sound/mpc media-video/vlc \
+media-gfx/feh media-plugins/alsa-plugins media-sound/alsamixer-app media-libs/alsa-lib x11-apps/xbacklight \
+dev-util/cmake net-misc/curl net-misc/dhcpcd sys-apps/dbus dev-lang/lua media-sound/gmtp \
+app-misc/neofetch app-arch/p7zip app-arch/unrar app-portage/genlop app-editors/leafpad \
+app-arch/unzip dev-lang/python sys-devel/gcc dev-vcs/git net-misc/openssh \
+media-fonts/terminus-font app-shells/zsh sys-power/acpi sys-process/htop \
+x11-apps/xbacklight sys-fs/ntfs3g games-roguelike/nethack www-client/firefox
+```
+
+## 41. re-initialize env variables
+When the installation is finished, some environment variables will need to re-initialized before continuing.
+```bash
+sudo env-update
+sudo source /etc/profile
+```
+
+## 42. clone dotfiles
+```bash
+git clone https://github.com/qeni/dotfiles /home/qeni/repo/dotfiles
+rsync -rvlkEth /home/qeni/dotfiles/.* ~/
+```
+
+## 43. add daemons
+```bash
+rc-update add sshd default
+```
+
+## 44. change default shell to zsh
+```bash
+chsh -s /bin/zsh $USER
+```
+
+## 45. configure nethack
+```bash
+sudo mkdir -p /var/games/nethack
+sudo mv ~/.nethack_record /var/games/nethack/record
+```
+
+## 46. go and conquer the world
+```bash
+startx
+```
+
